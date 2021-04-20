@@ -1,0 +1,31 @@
+/* will contain titles/tasks/sub_tasks */
+#content {
+
+}
+
+.column {
+    width:20%;
+    height: 100%;
+    /* Need to test to see if this allows the div to become scrollable when contents exceed height */
+    overflow-y: auto;
+}
+
+#titles_container {
+    background-color: red;
+}
+
+#tasks_container {
+    background-color: blue;
+}
+
+#sub_tasks_container {
+    background-color: green;
+}
+
+#form_container {
+    background-color: purple;
+}
+
+#create_new_task_button {
+    
+}
