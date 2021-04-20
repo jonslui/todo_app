@@ -1,31 +1,66 @@
 /* will contain titles/tasks/sub_tasks */
 #content {
-
-}
-
-.column {
-    width:20%;
+    color: #2b2b2b;
+    background-color: #fbfbfb;
+    display: flex;
     height: 100%;
-    /* Need to test to see if this allows the div to become scrollable when contents exceed height */
-    overflow-y: auto;
 }
 
 #titles_container {
-    background-color: red;
+    width:20%;
+    height: 100%;
+    overflow-y: auto;
+    grid-column: 1;
 }
 
-#tasks_container {
-    background-color: blue;
+#task_display_container {
+    background-color:beige;
+    width: 40%;
+    height: 100%;
+    overflow-y: auto;
+    grid-column: 2;
 }
 
 #sub_tasks_container {
     background-color: green;
+    width: 40%;
+    height: 100%;
+    overflow-y: auto;
+    grid-column: 3;
 }
 
 #form_container {
-    background-color: purple;
+    width: 100%;
+
 }
 
 #create_new_task_button {
-    
+    width: 100%;
+}
+
+.title_input {
+    width: 100%;
+}
+
+.due_date_input {
+    width: 100%;
+}
+
+.description_input {
+    width: 100%;
+}
+
+.form_button {
+    width: 50%;
+}
+
+.link_to_child {
+    width: 100%;
+    background-color: #fbfbfb;
+    cursor: pointer;
+    opacity: 1;
+}
+
+.link_to_child:hover{
+    opacity: 0.3;
 }
