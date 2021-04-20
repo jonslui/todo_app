@@ -14,6 +14,10 @@ create_new_task_button.addEventListener('click', function(){
 });
 
 function show_task_form(container, button){
+    // clear the div underneath hidden form
+    let task_info_container = document.getElementById('task_info_container');
+    task_info_container.innerHTML = '';
+
     // if the form hasn't been created yet, create it. Otherwise, make it visible. -- the forms cancel button will rehide it if canceled.
     if(container.hasChildNodes() == false){
         create_form(container, button, task_array, create_new_child);

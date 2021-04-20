@@ -1,7 +1,7 @@
 // check if form already exists,
 // if it does, check that it means submission requirements and submit
 // if it doesn't populate it
-function create_form(container, button, parent_array, create_child_function){
+function create_form(container, button, parent_array, create_child_function){    
     // create form
     let form = document.createElement('form');
     

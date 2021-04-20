@@ -1,3 +1,9 @@
+/* remove browser standard padding/displays */
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
 /* will contain titles/tasks/sub_tasks */
 #content {
     color: #2b2b2b;
@@ -21,8 +27,7 @@
     grid-column: 2;
 }
 
-#sub_tasks_container {
-    background-color: green;
+#subtask_display_container {
     width: 40%;
     height: 100%;
     overflow-y: auto;
@@ -32,6 +37,10 @@
 #form_container {
     width: 100%;
 
+}
+
+#task_info_container {
+    width: 100%;
 }
 
 #create_new_task_button {

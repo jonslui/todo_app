@@ -16,7 +16,7 @@ const Child = (title, description, due_date) => {
     )
 }
 
-function create_new_child(title, due_date, description, parent){
+function create_new_child(title, due_date, description){
     let child = Child(title, due_date, description)
     return child;
 }
