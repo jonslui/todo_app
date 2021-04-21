@@ -9,6 +9,8 @@ const Child = (title, description, due_date) => {
         children: [],
     }
 
+    
+
     return Object.assign(
         {
             state,

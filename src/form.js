@@ -1,7 +1,7 @@
 // check if form already exists,
 // if it does, check that it means submission requirements and submit
 // if it doesn't populate it
-function create_form(container, button, parent_array, create_child_function){    
+function create_form(container, button, create_child_function, test_variable){    
     // create form
     let form = document.createElement('form');
     
@@ -46,7 +46,7 @@ function create_form(container, button, parent_array, create_child_function){
 
     let fields_array = [title_input, description_input, due_date_input]
     form.onsubmit = function(){
-        submit_form(parent_array, fields_array, create_child_function);
+        submit_form(fields_array, create_child_function, test_variable);
     };
     container.appendChild(form);
 }
@@ -58,7 +58,10 @@ function cancel_form(container, button){
 }
 
 // get info from form and update localeStorage
-function submit_form(parent_array, fields_array, create_child_function){
+function submit_form(fields_array, create_child_function, index = null){
+    // get array from localStorage
+    let parent_array = JSON.parse(localStorage.getItem('task_array'));
+
     // fields array contains links to input field
     let title = fields_array[0].value;
     let description = fields_array[1].value;
@@ -66,7 +69,14 @@ function submit_form(parent_array, fields_array, create_child_function){
     
     // create a child with field data and then add it to the parent array and update localeStorage
     let child = create_child_function(title, description, due_date);
-    parent_array.push(child)
+
+    if (index == null){
+        parent_array.push(child);
+    } else {
+        parent_array[index].state.children.push(child);
+    }
+
+    // need to make sure it matches overarching array
     localStorage.setItem('task_array', JSON.stringify(parent_array));
 }
 

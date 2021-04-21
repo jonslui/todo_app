@@ -1,5 +1,6 @@
 /* remove browser standard padding/displays */
 html, body {
+    font-family: 'Montserrat', sans-serif;
     margin: 0;
     padding: 0;
 }
@@ -7,28 +8,58 @@ html, body {
 /* will contain titles/tasks/sub_tasks */
 #content {
     color: #2b2b2b;
-    background-color: #fbfbfb;
+    background-color: #EDF6F9;
     display: flex;
     height: 100%;
 }
 
 #titles_container {
-    width:20%;
+    background-color: #006D77;
+    width: 30%;
     height: 100%;
     overflow-y: auto;
     grid-column: 1;
 }
 
+#task_titles_container{
+    display: grid;
+    grid-template-columns: 85% 15%;
+    color: #fbfbfb;
+}
+
+#subtask_link_container {
+    display: grid;
+    grid-template-columns: 85% 15%;
+    color: #fbfbfb;
+}
+
+.task_title {
+    cursor: pointer;
+    opacity: 1;
+}
+.task_title:hover {
+    opacity: 0.6;
+}
+
+.remove_child {
+    text-align: center;
+}
+
+.remove_child:hover {
+    opacity: 0.6;
+}
+
 #task_display_container {
-    background-color:beige;
-    width: 40%;
+    background-color: #83C5BE;
+    width: 35%;
     height: 100%;
     overflow-y: auto;
     grid-column: 2;
 }
 
 #subtask_display_container {
-    width: 40%;
+    background-color: #EDF6F9;
+    width: 35%;
     height: 100%;
     overflow-y: auto;
     grid-column: 3;
@@ -36,14 +67,22 @@ html, body {
 
 #form_container {
     width: 100%;
-
+}
+#subtask_form_container {
+    width: 100%;
 }
 
 #task_info_container {
     width: 100%;
 }
+#subtask_info_container {
+    width: 100%;
+}
 
 #create_new_task_button {
+    width: 100%;
+}
+#create_new_subtask_button {
     width: 100%;
 }
 
@@ -61,15 +100,4 @@ html, body {
 
 .form_button {
     width: 50%;
-}
-
-.link_to_child {
-    width: 100%;
-    background-color: #fbfbfb;
-    cursor: pointer;
-    opacity: 1;
-}
-
-.link_to_child:hover{
-    opacity: 0.3;
 }
