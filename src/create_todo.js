@@ -1,15 +1,14 @@
-const Child = (title, description, due_date) => {
+const Child = (title, description, priority) => {
     let state = {
         title: title,
         description: description,
-        due_date: due_date,
-        // status refers to complete vs incomplete
-        status: false,
+        priority: priority,
+        // child_depth: parent.state.depth + 1,
+
         // subtasks will be stored in "Children"
         children: [],
     }
 
-    
 
     return Object.assign(
         {
@@ -18,8 +17,8 @@ const Child = (title, description, due_date) => {
     )
 }
 
-function create_new_child(title, due_date, description){
-    let child = Child(title, due_date, description)
+function create_new_child(title, priority, description){
+    let child = Child(title, priority, description)
     return child;
 }
 

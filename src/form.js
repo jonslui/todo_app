@@ -1,7 +1,7 @@
 // check if form already exists,
 // if it does, check that it means submission requirements and submit
 // if it doesn't populate it
-function create_form(container, button, create_child_function, test_variable){    
+function create_form(container, button, create_child_function, array){    
     // create form
     let form = document.createElement('form');
     
@@ -16,16 +16,15 @@ function create_form(container, button, create_child_function, test_variable){
     description_input.setAttribute('type','text');
     description_input.setAttribute('class','description_input');
     description_input.placeholder = 'Description';
-    description_input.required = true;
 
-    let due_date_input = document.createElement('input');
-    due_date_input.setAttribute('type','text');
-    due_date_input.setAttribute('class','due_date_input');
-    due_date_input.placeholder = 'Due date';
+    let priority_input = document.createElement('input');
+    priority_input.setAttribute('type','text');
+    priority_input.setAttribute('class','priority_input');
+    priority_input.placeholder = 'Priority';
 
     form.appendChild(title_input);
     form.appendChild(description_input);
-    form.appendChild(due_date_input);
+    form.appendChild(priority_input);
 
     let cancel_button = document.createElement('button');
     cancel_button.setAttribute('type','button');
@@ -44,40 +43,20 @@ function create_form(container, button, create_child_function, test_variable){
     form.appendChild(cancel_button);
 
 
-    let fields_array = [title_input, description_input, due_date_input]
-    form.onsubmit = function(){
-        submit_form(fields_array, create_child_function, test_variable);
-    };
+    let fields_array = [title_input, description_input, priority_input]
+
     container.appendChild(form);
-}
 
-// have the buttons for closing the form be here
-function cancel_form(container, button){
-    container.style.display = 'none';
-    button.style.display = '';
-}
-
-// get info from form and update localeStorage
-function submit_form(fields_array, create_child_function, index = null){
-    // get array from localStorage
-    let parent_array = JSON.parse(localStorage.getItem('task_array'));
-
-    // fields array contains links to input field
-    let title = fields_array[0].value;
-    let description = fields_array[1].value;
-    let due_date = fields_array[2].value;
-    
-    // create a child with field data and then add it to the parent array and update localeStorage
-    let child = create_child_function(title, description, due_date);
-
-    if (index == null){
-        parent_array.push(child);
-    } else {
-        parent_array[index].state.children.push(child);
+    return {
+        form, 
+        fields_array,
     }
-
-    // need to make sure it matches overarching array
-    localStorage.setItem('task_array', JSON.stringify(parent_array));
 }
+
+// removes form div
+function cancel_form(container){
+    container.remove();
+}
+
 
 export default create_form;

@@ -1,172 +1,189 @@
 import create_new_child from './create_todo.js';
 import create_form from './form.js';
 
-// initial loadout, includes the title column (labels/list of projects/new project button/etc)
-let parent_array = get_tasks_array();
 
-function load_initial_page(){
-    let container = document.getElementById('content');   
+let localStorage_array = get_localStorage_array();
 
-    // create the naviagtional bar down the left side of the screen
-    let titles_container = document.createElement('div');
-    titles_container.setAttribute('id', 'titles_container');
-    container.appendChild(titles_container);
+function initial_page_load(){
+    let container = document.getElementById('content');
 
-    // button for creating new tasks
-    let create_new_task_button = document.createElement('button');
-    create_new_task_button.innerHTML = "New Task"
-    create_new_task_button.setAttribute('id','create_new_task_button');
-    titles_container.appendChild(create_new_task_button);
+    let first_column = document.createElement('div');
+    first_column.id = 0;
+    first_column.setAttribute('class', 'column');
+    container.appendChild(first_column);
 
-    // create container for task titles
-    let task_titles_container = document.createElement('div');
-    task_titles_container.setAttribute('id','task_titles_container');
-    titles_container.appendChild(task_titles_container);
+    populate_column(first_column, localStorage_array);
+}
 
-    // create container that will display clicked upon todo value
-    let task_display_container = document.createElement('div');
-    task_display_container.setAttribute('id', 'task_display_container');
-    container.appendChild(task_display_container);
+function populate_column(old_column, array){
+    // create new column for this columns form/children render
+    let new_column = create_column(old_column);
 
-    // container that will render/clear its contents when the create_new_task_button is clicked.
+    // create containers for this column
+    let titles_container = create_title_container(old_column);
+
+
+    // create button and append to old column
+    let button = create_button(old_column);
+    button.innerHTML = 'New Task';
+    button.addEventListener('click', function(){  
+        // checks the corresponding column to see if a form_container has already been created (length will == 1 if it has been), 
+        // if not, run the following functions to create form_container, form, and add onsubmit function(gets form data and updates local storage) to it.
+        if(new_column.getElementsByClassName('form_container').length == 0){
+            let form_container = create_form_container(new_column)
+
+            new_task_button_events(form_container, button, array);
+        }
+    });
+
+    // render titles/add links to each/inside onclick function run populate column
+    array.forEach(function(child){
+        let title = render_title(child, titles_container);
+        title.addEventListener('click', function(){
+
+            // should clear column be here?
+            clear_column(new_column);
+
+            render_title_information(child, new_column);
+            populate_column(new_column, child.state.children);
+        });
+    });
+}
+
+function new_task_button_events(form_container, button, array){      
+        let form_data = create_form(form_container, button, create_new_child, array);
+    
+        form_data.form.onsubmit = function (){
+            get_form_data(form_data.fields_array, create_new_child, array)
+            update_localStorage_array();
+        }
+
+        // button.style.display = 'none';
+}
+
+function create_form_container(column){
+    // create form 
     let form_container = document.createElement('div');
-    form_container.setAttribute('id','form_container');
-    task_display_container.appendChild(form_container);
-
-    // container for task info
-    let task_info_container = document.createElement('div');
-    task_info_container.setAttribute('id', "task_info_container");
-    task_display_container.appendChild(task_info_container);
-
-    // create div for each child and append to task_titles_container, in titles_container
-    parent_array.forEach(item => render_task_link(item, parent_array, task_titles_container, task_info_container, form_container, create_new_task_button));
-
-
-    // CHANGE LOCATION LATER
-    create_new_task_button.addEventListener('click', function(){
-        show_task_form(form_container, task_info_container, create_new_task_button);
-    });
-
-
-
-
-    // create container to display task's subtasks
-    let subtask_display_container = document.createElement('div');
-    subtask_display_container.setAttribute('id', 'subtask_display_container');
-    container.appendChild(subtask_display_container);
-
-    let subtask_form_container = document.createElement('div');
-    subtask_form_container.setAttribute('id', 'subtask_form_container');
-    subtask_display_container.appendChild(subtask_form_container);
-
-    let subtask_info_container = document.createElement('div');
-    subtask_info_container.setAttribute('id', 'subtask_info_container');
-    subtask_display_container.appendChild(subtask_info_container);
-};
-
-function render_task_link(child, array, container, info_container, form_container, button) {
-    let link_to_child = document.createElement('div');
-    link_to_child.setAttribute('class', 'task_title');
-    link_to_child.innerHTML = child.state.title;
-
-    let remove_this_child = document.createElement('div');
-    remove_this_child.setAttribute('class', 'remove_child');
-    remove_this_child.innerHTML = 'X';
-    remove_this_child.addEventListener('click', function(){
-        // remove child from parent array and update localStorage
-        remove_child_from_array(child, array);
+    form_container.setAttribute('class','form_container');
+    column.appendChild(form_container);
     
-        // remove child's div from left column
-        link_to_child.remove();
-        remove_this_child.remove();
-    });
-
-    // When clicked, render that tasks information into the corresponding div
-    link_to_child.addEventListener('click', function(){
-        render_task_info(child, info_container, form_container, button)
-    });
-
-    container.appendChild(link_to_child);
-    container.appendChild(remove_this_child);
+    return form_container;
 }
 
-function remove_child_from_array(child, array){    
-    // splice from parent_array
-    let index = array.indexOf(child);
-    array.splice(index, 1);
+// remove content from column
+// currently called by rendering form info, need to think about that and change/add more
+// add clear_column to info rendering form again right after this one
+function clear_later_columns(column){
+    let last_column_id = document.getElementById('content').lastChild.id;
 
-    // update localStorage -- parent array variable already set
-    console.log(index);
-    console.log(array);
-    localStorage.setItem('task_array', JSON.stringify(parent_array));
+    // maybe until column == .lastChild, delete? while column!=...
+    while(column.id + 1 < last_column_id){
+        document.getElementById(last_column_id).remove();
+
+        last_column_id -= 1;
+    }
 }
 
-// add button to create children here/call display children/remove children functions inside
-function render_task_info(child, info_container, form_container, button){
-    // hide/show create new task info
-    form_container.style.display = 'none';
-    button.style.display = '';
+function clear_column(column){
+    column.innerHTML = '';
+}
+
+// creates a new column
+// fix whats going on with the id
+function create_column(old_column){
+    let container = document.getElementById('content');
+    let new_id = parseInt(old_column.id) + 1;
+    let new_column = document.createElement('div');
+    new_column.setAttribute('id', new_id);
+    new_column.setAttribute('class', 'column');
+    container.appendChild(new_column);
+
+    return new_column
+}
+
+
+function create_button(old_column) {
+    let button = document.createElement('button');
+    old_column.appendChild(button);
+
+    return button;
+}
+
+
+function create_title_container(column){
+    let titles_container = document.createElement('div');
+    titles_container.setAttribute('class','titles_container');
+    column.appendChild(titles_container);
+
+    return titles_container;
+}
+
+
+function render_title(child, titles_container){
+    let title = document.createElement('div');
+    title.setAttribute('class', 'title');
+    title.innerHTML = child.state.title;
+
+    titles_container.appendChild(title);
+
+    return title;
+}
+
+
+function create_info_container(column){
+    let info_container = document.createElement('div');
+    info_container.setAttribute('class', 'info_container');
+    column.appendChild(info_container);
+
+    return info_container;
+}
+
+function render_title_information(child, column){
+    // create info container
+    clear_later_columns(column);
+
+    let info_container = create_info_container(column);
+
+    // create divs inside info container to hold data
+    let title = document.createElement('div');
+    title.innerHTML = child.state.title;
+    info_container.appendChild(title);
+
+    let description = document.createElement('div');
+    description.innerHTML = child.state.description;
+    info_container.appendChild(description);
+
+    let priority = document.createElement('div');
+    priority.innerHTML = child.state.priority;
+    info_container.appendChild(priority);
+}
+
+// get info from form and update localeStorage //
+function get_form_data(fields_array, create_child_function, array){
+    // fields array contains links to input field
+    let title = fields_array[0].value;
+    let description = fields_array[1].value;
+    let priority = fields_array[2].value;
     
-    // clear container of previously rendered information
-    info_container.innerHTML = ''
+    // create a child with field data and then add it to the parent array and update localeStorage
+    let child = create_child_function(title, description, priority);
 
-    // render new info
-    let task_title = document.createElement('div');
-    task_title.innerHTML = "Title: " + child.state.title;  
-    info_container.appendChild(task_title);
-
-    let task_description = document.createElement('div');
-    task_description.innerHTML = "Description: " + child.state.description;
-    info_container.appendChild(task_description);
-
-    let task_due_date = document.createElement('div');
-    task_due_date.innerHTML = "Due date: " + child.state.due_date;
-    info_container.appendChild(task_due_date);
-
-    let subtask_link_container = document.createElement('div');
-    subtask_link_container.setAttribute('id','subtask_link_container');
-    info_container.appendChild(subtask_link_container);
-
-    // this button will open the form to create subtasks/add to the objects children array
-    let create_new_subtask_button = document.createElement('button');
-    create_new_subtask_button.innerHTML = "New Subtask"
-    create_new_subtask_button.setAttribute('id','create_new_subtask_button');
-    info_container.appendChild(create_new_subtask_button);
-
-    let subtask_form_container = document.getElementById('subtask_form_container');
-    let subtask_info_container = document.getElementById('subtask_info_container');
-    create_new_subtask_button.addEventListener('click', function(){
-        show_task_form(subtask_form_container, subtask_info_container, create_new_subtask_button, parent_array.indexOf(child));
-    });
-
-    // add a links to each subtask/info
-    child.state.children.forEach(object => render_task_link(object, child.state.children, subtask_link_container, subtask_info_container, subtask_form_container, create_new_subtask_button));
-};
-
-function show_task_form(container, other_container_in_parent_div, button, test_variable){
-    // clear the div underneath hidden form
-    other_container_in_parent_div.innerHTML = '';
-
-    // if the form hasn't been created yet, create it. Otherwise, make it visible. -- the forms cancel button will rehide it if canceled.
-    if(container.hasChildNodes() == false){
-        create_form(container, button, create_new_child, test_variable);
-        container.style.display = "";
-    } else {
-        container.style.display = "";
-    }
-    // hides the submit button when form is open, there's a cancel button in the form that makes this button visible again when it is closed.
-    button.style.display = "none";
+    array.push(child);
 }
 
 
-// if the task array exists in localStorage, return it. Otherwise, return an empty array.
-function get_tasks_array(){
-    if (localStorage.getItem('task_array') == null){
-        // set task array to 
-        localStorage.setItem('task_array', JSON.stringify([]));
+function get_localStorage_array(){
+    let array = JSON.parse(localStorage.getItem('task_array'));
+
+    if(array == null){
+        return [];
     }
-        
-    return JSON.parse(localStorage.getItem('task_array'));
+
+    return array;
 }
 
-export default load_initial_page;
+function update_localStorage_array(array){
+    localStorage.setItem('task_array', JSON.stringify(localStorage_array));
+}
+
+export default initial_page_load;
