@@ -8,7 +8,8 @@ function create_form(container, button){
     // create form fields
     let title_input = create_input_field('Title', true);
     let description_input = create_input_field('Description', false);
-    let priority_input = create_input_field('Priority', false);
+    let priority_input = create_select_field(false);
+    let due_date_input = create_date_field(false);
 
 
     let cancel_button = document.createElement('button');
@@ -29,11 +30,12 @@ function create_form(container, button){
     form.appendChild(title_input);
     form.appendChild(description_input);
     form.appendChild(priority_input);
+    form.appendChild(due_date_input);
     form.appendChild(submit_button);
     form.appendChild(cancel_button);
 
 
-    let fields_array = [title_input, description_input, priority_input]
+    let fields_array = [title_input, description_input, priority_input, due_date_input];
 
     container.appendChild(form);
 
@@ -44,13 +46,43 @@ function create_form(container, button){
 }
 
 function create_input_field(placeholder, is_required){
-    let field = document.createElement('input');
-    field.setAttribute('type','text');
-    field.setAttribute('class','form_field');
-    field.placeholder = placeholder;
-    field.required = is_required;
+    let element = document.createElement('input');
+    element.setAttribute('type','text');
+    element.setAttribute('class','form_field');
+    element.placeholder = placeholder;
+    element.required = is_required;
 
-    return field
+    return element;
+}
+
+function create_date_field(is_required){
+    let element = document.createElement('input');
+    element.setAttribute('type', 'date');
+    element.setAttribute('class', 'form_field');
+    element.required = is_required;
+
+    return element;
+}
+
+function create_select_field(is_required){
+    let element = document.createElement('SELECT');
+    element.setAttribute('class','form_field');
+    element.required = is_required;
+
+    create_option('High', element);
+    create_option('Medium', element);
+    create_option('Low', element);
+
+    return element;
+}
+
+function create_option(value, select_field){
+    let option = document.createElement('option');
+    option.setAttribute('value', value);
+    let node = document.createTextNode(value);
+    option.appendChild(node);
+
+    select_field.appendChild(option);
 }
 
 // removes form div

@@ -1,11 +1,10 @@
-const Child = (title, description, priority) => {
+const Child = (title, description, priority, due_date) => {
     let state = {
         title: title,
         description: description,
         priority: priority,
-        // child_depth: parent.state.depth + 1,
-
-        // subtasks will be stored in "Children"
+        due_date: due_date,
+        // subtasks are stored in children
         children: [],
     }
 
@@ -17,8 +16,9 @@ const Child = (title, description, priority) => {
     )
 }
 
-function create_new_child(title, priority, description){
-    let child = Child(title, priority, description)
+
+function create_new_child(title, priority, description, due_date){
+    let child = Child(title, priority, description, due_date)
     return child;
 }
 

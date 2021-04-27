@@ -31,15 +31,14 @@ function populate_column(old_column, array){
     button.addEventListener('click', function(){  
         // checks the corresponding column to see if a form_container has already been created (length will == 1 if it has been), 
         // if not, run the following functions to create form_container, form, and add onsubmit function(gets form data and updates local storage) to it.
-        if(new_column.getElementsByClassName('form_container').length == 0){
-            let form_container = create_form_container(new_column)
-
+        if(old_column.getElementsByClassName('form_container').length == 0){
+            let form_container = create_form_container(old_column);
             new_task_button_events(form_container, button, array);
         }
     });
 
     // render titles/add links to each/inside onclick function run populate column
-    array.forEach(function(child, index){
+    array.forEach(function(child){
         let title = render_title(child, titles_container);
 
         title.addEventListener('click', function(){
@@ -53,7 +52,7 @@ function populate_column(old_column, array){
         let button = render_delete_button(titles_container);
         
         button.addEventListener('click', function(){
-            remove_child_from_array(index, array);
+            remove_child_from_array(child, array);
 
             // remove title/button from form container without having to reload page
             title.remove();
@@ -73,18 +72,18 @@ function render_delete_button(container){
     return button;
 }
 
-function remove_child_from_array(index, array){
+function remove_child_from_array(child, array){
+    let index = array.indexOf(child);
     array.splice(index, 1);
     update_localStorage_array();
 }
 
-function new_task_button_events(form_container, button, array){      
+function new_task_button_events(form_container, button, array){     
         let form_data = create_form(form_container, button);
     
         form_data.form.onsubmit = function (){
             get_form_data(form_data.fields_array, create_new_child, array)
             update_localStorage_array();
-            // return false;
         }
 }
 
@@ -190,9 +189,10 @@ function get_form_data(fields_array, create_child_function, array){
     let title = fields_array[0].value;
     let description = fields_array[1].value;
     let priority = fields_array[2].value;
+    let due_date = fields_array[3].value;
     
     // create a child with field data and then add it to the parent array and update localeStorage
-    let child = create_child_function(title, description, priority);
+    let child = create_child_function(title, description, priority, due_date);
 
     array.push(child);
 }

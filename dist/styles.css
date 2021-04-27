@@ -15,7 +15,7 @@ html, body {
 .column {
     width: 20%;
     height: 100%;
-    grid-column: 1;
+    flex: 1;
 }
 
 .new_task_button {
