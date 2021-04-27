@@ -5,13 +5,17 @@ import create_form from './form.js';
 let localStorage_array = get_localStorage_array();
 
 function initial_page_load(){
+    // get main container, all columns will be appended to this grid
     let container = document.getElementById('content');
 
+    // create the first column, give it an id of 0, all other columns will incremenet the id off the previous number, 0,1,2,3...
     let first_column = document.createElement('div');
     first_column.id = 0;
     first_column.setAttribute('class', 'column');
     container.appendChild(first_column);
 
+    // create next column, any actions from the old column (creating new task, 
+    // opening a task from that column, will appear in the column created from this one)
     populate_column(first_column, localStorage_array);
 }
 
@@ -22,10 +26,8 @@ function populate_column(old_column, array){
     // create containers for this column
     let titles_container = create_title_container(old_column);
 
-
     // create button and append to old column
     let button = create_button(old_column);
-    button.innerHTML = 'New Task';
     button.addEventListener('click', function(){  
         // checks the corresponding column to see if a form_container has already been created (length will == 1 if it has been), 
         // if not, run the following functions to create form_container, form, and add onsubmit function(gets form data and updates local storage) to it.
@@ -37,28 +39,53 @@ function populate_column(old_column, array){
     });
 
     // render titles/add links to each/inside onclick function run populate column
-    array.forEach(function(child){
+    array.forEach(function(child, index){
         let title = render_title(child, titles_container);
-        title.addEventListener('click', function(){
 
+        title.addEventListener('click', function(){
             // should clear column be here?
             clear_column(new_column);
 
             render_title_information(child, new_column);
             populate_column(new_column, child.state.children);
         });
+
+        let button = render_delete_button(titles_container);
+        
+        button.addEventListener('click', function(){
+            remove_child_from_array(index, array);
+
+            // remove title/button from form container without having to reload page
+            title.remove();
+            button.remove();
+        })
+
     });
 }
 
+function render_delete_button(container){
+    let button = document.createElement('a');
+    button.innerHTML = 'X';
+    button.setAttribute('class','delete_button');
+
+    container.appendChild(button);
+
+    return button;
+}
+
+function remove_child_from_array(index, array){
+    array.splice(index, 1);
+    update_localStorage_array();
+}
+
 function new_task_button_events(form_container, button, array){      
-        let form_data = create_form(form_container, button, create_new_child, array);
+        let form_data = create_form(form_container, button);
     
         form_data.form.onsubmit = function (){
             get_form_data(form_data.fields_array, create_new_child, array)
             update_localStorage_array();
+            // return false;
         }
-
-        // button.style.display = 'none';
 }
 
 function create_form_container(column){
@@ -70,18 +97,16 @@ function create_form_container(column){
     return form_container;
 }
 
-// remove content from column
-// currently called by rendering form info, need to think about that and change/add more
-// add clear_column to info rendering form again right after this one
-function clear_later_columns(column){
-    let last_column_id = document.getElementById('content').lastChild.id;
+// 1. getsHTMLcollection of all columns
+// 2. deleted ones later than the column_id
+// This function is used to clear all columns after the one the user just clicked, to help make viewing interface clearer
+function clear_later_columns(column_id){
+    let main_container = document.getElementById('content');
+    let columns_as_HTMLcollection = main_container.getElementsByClassName('column');
 
-    // maybe until column == .lastChild, delete? while column!=...
-    while(column.id + 1 < last_column_id){
-        document.getElementById(last_column_id).remove();
-
-        last_column_id -= 1;
-    }
+    for(let i = columns_as_HTMLcollection.length - 1; i > column_id; i--){
+        columns_as_HTMLcollection[i].remove();
+    } 
 }
 
 function clear_column(column){
@@ -104,6 +129,8 @@ function create_column(old_column){
 
 function create_button(old_column) {
     let button = document.createElement('button');
+    button.setAttribute('class','new_task_button');
+    button.innerHTML = 'New Task';
     old_column.appendChild(button);
 
     return button;
@@ -129,7 +156,6 @@ function render_title(child, titles_container){
     return title;
 }
 
-
 function create_info_container(column){
     let info_container = document.createElement('div');
     info_container.setAttribute('class', 'info_container');
@@ -140,7 +166,7 @@ function create_info_container(column){
 
 function render_title_information(child, column){
     // create info container
-    clear_later_columns(column);
+    clear_later_columns(column.id);
 
     let info_container = create_info_container(column);
 
@@ -182,7 +208,7 @@ function get_localStorage_array(){
     return array;
 }
 
-function update_localStorage_array(array){
+function update_localStorage_array(){
     localStorage.setItem('task_array', JSON.stringify(localStorage_array));
 }
 

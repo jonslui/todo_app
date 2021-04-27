@@ -1,30 +1,15 @@
 // check if form already exists,
 // if it does, check that it means submission requirements and submit
 // if it doesn't populate it
-function create_form(container, button, create_child_function, array){    
+function create_form(container, button){    
     // create form
     let form = document.createElement('form');
     
     // create form fields
-    let title_input = document.createElement('input');
-    title_input.setAttribute('type','text');
-    title_input.setAttribute('class','title_input');
-    title_input.placeholder = "Title";
-    title_input.required = true;
+    let title_input = create_input_field('Title', true);
+    let description_input = create_input_field('Description', false);
+    let priority_input = create_input_field('Priority', false);
 
-    let description_input = document.createElement('input');
-    description_input.setAttribute('type','text');
-    description_input.setAttribute('class','description_input');
-    description_input.placeholder = 'Description';
-
-    let priority_input = document.createElement('input');
-    priority_input.setAttribute('type','text');
-    priority_input.setAttribute('class','priority_input');
-    priority_input.placeholder = 'Priority';
-
-    form.appendChild(title_input);
-    form.appendChild(description_input);
-    form.appendChild(priority_input);
 
     let cancel_button = document.createElement('button');
     cancel_button.setAttribute('type','button');
@@ -39,6 +24,11 @@ function create_form(container, button, create_child_function, array){
     submit_button.setAttribute('class','form_button')
     submit_button.innerHTML = "Submit";
 
+
+    // append fields to form
+    form.appendChild(title_input);
+    form.appendChild(description_input);
+    form.appendChild(priority_input);
     form.appendChild(submit_button);
     form.appendChild(cancel_button);
 
@@ -51,6 +41,16 @@ function create_form(container, button, create_child_function, array){
         form, 
         fields_array,
     }
+}
+
+function create_input_field(placeholder, is_required){
+    let field = document.createElement('input');
+    field.setAttribute('type','text');
+    field.setAttribute('class','form_field');
+    field.placeholder = placeholder;
+    field.required = is_required;
+
+    return field
 }
 
 // removes form div
