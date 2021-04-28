@@ -2,7 +2,6 @@ import create_new_child from './create_todo.js';
 import create_form from './form.js';
 import {compareAsc, parseISO, format} from 'date-fns';
 
-
 let localStorage_array = get_localStorage_array();
 
 function initial_page_load(){
@@ -20,7 +19,20 @@ function initial_page_load(){
     populate_column(first_column, localStorage_array);
 }
 
+function sort_by_date(array){
+    array = array.sort(function(a,b){
+        return compareAsc(parseISO(a.state.due_date), parseISO(b.state.due_date));
+     });
+
+     update_localStorage_array();
+
+     return array;
+}
+
 function populate_column(old_column, array){
+
+    array = sort_by_date(array)
+
     let new_column = create_column(old_column);
     let titles_container = create_title_container(old_column);
     let button = create_button(old_column);
