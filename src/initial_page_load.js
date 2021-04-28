@@ -1,5 +1,6 @@
 import create_new_child from './create_todo.js';
 import create_form from './form.js';
+import {compareAsc, parseISO, format} from 'date-fns';
 
 
 let localStorage_array = get_localStorage_array();
@@ -20,13 +21,8 @@ function initial_page_load(){
 }
 
 function populate_column(old_column, array){
-    // create new column for this columns form/children render
     let new_column = create_column(old_column);
-
-    // create containers for this column
     let titles_container = create_title_container(old_column);
-
-    // create button and append to old column
     let button = create_button(old_column);
     button.addEventListener('click', function(){  
         // checks the corresponding column to see if a form_container has already been created (length will == 1 if it has been), 
@@ -37,10 +33,10 @@ function populate_column(old_column, array){
         }
     });
 
-    // render titles/add links to each/inside onclick function run populate column
+    // render titles/links and delete button
     array.forEach(function(child){
-        let title = render_title(child, titles_container);
 
+        let title = render_title(child, titles_container);
         title.addEventListener('click', function(){
             // should clear column be here?
             clear_column(new_column);
@@ -50,11 +46,10 @@ function populate_column(old_column, array){
         });
 
         let button = render_delete_button(titles_container);
-        
         button.addEventListener('click', function(){
             remove_child_from_array(child, array);
 
-            // remove title/button from form container without having to reload page
+            // removes title/button from form container without having to reload page
             title.remove();
             button.remove();
         })
@@ -79,12 +74,12 @@ function remove_child_from_array(child, array){
 }
 
 function new_task_button_events(form_container, button, array){     
-        let form_data = create_form(form_container, button);
-    
-        form_data.form.onsubmit = function (){
-            get_form_data(form_data.fields_array, create_new_child, array)
-            update_localStorage_array();
-        }
+    let form_data = create_form(form_container, button);
+
+    form_data.form.onsubmit = function (){
+        get_form_data(form_data.fields_array, create_new_child, array)
+        update_localStorage_array();
+    }
 }
 
 function create_form_container(column){
@@ -181,6 +176,11 @@ function render_title_information(child, column){
     let priority = document.createElement('div');
     priority.innerHTML = child.state.priority;
     info_container.appendChild(priority);
+
+    let due_date = document.createElement('div');
+    // format and parseISO are two functions from date-fns, format manipulates how the date data is displayed, parseISO makes data readable for format.
+    due_date.innerHTML = format(parseISO(child.state.due_date), 'MM/dd/yyyy');
+    info_container.appendChild(due_date);
 }
 
 // get info from form and update localeStorage //
