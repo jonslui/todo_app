@@ -20,9 +20,13 @@ function initial_page_load(){
 }
 
 function populate_column(old_column, array){
+    
+    create_sort_buttons(old_column, array);
+
     let new_column = create_column(old_column);
     let titles_container = create_title_container(old_column);
     let button = create_button(old_column);
+    
     button.addEventListener('click', function(){  
         // checks the corresponding column to see if a form_container has already been created (length will == 1 if it has been), 
         // if not, run the following functions to create form_container, form, and add onsubmit function(gets form data and updates local storage) to it.
@@ -35,7 +39,6 @@ function populate_column(old_column, array){
     // create container for titles and delete buttons, then populate with children
     create_title_and_remove_button_container(array, titles_container, new_column);
 
-    create_sort_buttons(old_column, array);
 
 }
 
@@ -48,8 +51,10 @@ function create_title_and_remove_button_container(array, parent_container, new_c
             container.setAttribute('class', 'title_and_delete_button_container high_priority')
         }else if(child.state.priority == "2"){
             container.setAttribute('class','title_and_delete_button_container medium_priority');
-        }else{
+        }else if(child.state.priority == "3"){
             container.setAttribute('class','title_and_delete_button_container low_priority');
+        }else{
+            container.setAttribute('class','title_and_delete_button_container');
         }
 
         let title = render_title(child, container);
@@ -75,19 +80,41 @@ function create_title_and_remove_button_container(array, parent_container, new_c
 }
 
 function create_sort_buttons(column, array){
-    
+    // let sort_selector = document.createElement('SELECT')
+
+    // let by_date = document.createElement('option');
+    // let by_date_node = document.createTextNode("DATE");
+    // by_date.appendChild(by_date_node);
+    // sort_selector.appendChild(by_date);
+
+    // let by_priority = document.createElement('option');
+    // let by_priority_node = document.createTextNode("PRIORITY")
+    // by_priority.appendChild(by_priority_node);
+    // sort_selector.appendChild(by_priority);
+
+    // column.appendChild(sort_selector);
+
+
     let sort_by_date_button = document.createElement('button');
+    sort_by_date_button.setAttribute('class', 'sort_button');
     sort_by_date_button.addEventListener('click', function(){
         sort_by_date(array)
+        let container = document.getElementById('content');
+        container.innerHTML = '';
+        initial_page_load();
     });
-    sort_by_date_button.innerHTML = 'Date';
+    sort_by_date_button.innerHTML = 'Sort by Date';
     column.appendChild(sort_by_date_button);
 
     let sort_by_priority_button = document.createElement('button');
+    sort_by_priority_button.setAttribute('class', 'sort_button')
     sort_by_priority_button.addEventListener('click', function(){
         sort_by_priority(array)
+        let container = document.getElementById('content');
+        container.innerHTML = '';
+        initial_page_load();
     });
-    sort_by_priority_button.innerHTML = 'Priority';
+    sort_by_priority_button.innerHTML = 'Sort by Priority';
     column.appendChild(sort_by_priority_button);
 }
 
@@ -246,7 +273,16 @@ function get_form_data(fields_array, create_child_function, array){
 
 function sort_by_date(array){
     array.sort(function(a,b){
-        return compareAsc(parseISO(a.state.due_date), parseISO(b.state.due_date));
+        if(a.state.due_date == '' && b.state.due_date != ''){
+            return 1;
+        }else if(b.state.due_date == '' && a.state.due_date != ''){
+            return -1;
+        }else if(b.state.due_date == '' && b.state.due_date == ''){
+            return 0;
+        }else{
+            return compareAsc(parseISO(a.state.due_date), parseISO(b.state.due_date));
+        }
+        
      });
 
      update_localStorage_array();

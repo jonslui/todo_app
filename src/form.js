@@ -6,8 +6,8 @@ function create_form(container, button){
     let form = document.createElement('form');
     
     // create form fields
-    let title_input = create_input_field('Title', true);
-    let description_input = create_input_field('Description', false);
+    let title_input = create_input_field('Enter Title', true);
+    let description_input = create_input_field('Enter Description', false);
     let priority_input = create_select_field(false);
     let due_date_input = create_date_field(false);
 
@@ -69,6 +69,7 @@ function create_select_field(is_required){
     element.setAttribute('class','form_field');
     element.required = is_required;
 
+    create_option('Select Priority (Optional)', 4, element);
     create_option('Low', 3, element);
     create_option('Medium', 2, element);
     create_option('High', 1, element);
