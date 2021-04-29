@@ -69,17 +69,17 @@ function create_select_field(is_required){
     element.setAttribute('class','form_field');
     element.required = is_required;
 
-    create_option('High', element);
-    create_option('Medium', element);
-    create_option('Low', element);
+    create_option('Low', 3, element);
+    create_option('Medium', 2, element);
+    create_option('High', 1, element);
 
     return element;
 }
 
-function create_option(value, select_field){
+function create_option(text, value, select_field){
     let option = document.createElement('option');
     option.setAttribute('value', value);
-    let node = document.createTextNode(value);
+    let node = document.createTextNode(text);
     option.appendChild(node);
 
     select_field.appendChild(option);
