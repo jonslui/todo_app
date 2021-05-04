@@ -4,6 +4,7 @@ const Child = (title, description, priority, due_date) => {
         description: description,
         priority: priority,
         due_date: due_date,
+        is_displayed: false,
         // subtasks are stored in children
         children: [],
     }

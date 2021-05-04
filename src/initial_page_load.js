@@ -20,7 +20,7 @@ function initial_page_load(){
 }
 
 function populate_column(old_column, array){
-    
+
     create_sort_buttons(old_column, array);
 
     let new_column = create_column(old_column);
@@ -45,6 +45,10 @@ function populate_column(old_column, array){
 // create and populate individual containers for each child containing title and delete button
 function create_title_and_remove_button_container(array, parent_container, new_column){
     array.forEach(function(child){
+
+        // make sure no child's is_displayed property is set to true
+        child.state.is_displayed = false;
+
         let container = document.createElement('div');
         
         if(child.state.priority == "1"){
@@ -61,12 +65,19 @@ function create_title_and_remove_button_container(array, parent_container, new_c
         title.addEventListener('click', function(){
             clear_column(new_column);
 
+            // update which child is currently displayed on the right hand side
+            change_is_displayed(array, child);
+
             render_title_information(child, new_column);
             populate_column(new_column, child.state.children);
         });
 
         let button = render_delete_button(container);
         button.addEventListener('click', function(){
+            // check if the child to be delete is currently displayed in the column on the right,
+            // if it is, clear the right hand columns.
+            check_if_displayed(new_column, child, array);
+
             remove_child_from_array(child, array);
 
             // removes title/button from form container without having to reload page
@@ -79,29 +90,40 @@ function create_title_and_remove_button_container(array, parent_container, new_c
     });
 }
 
+function check_if_displayed(column, child, array){
+    if(child.state.is_displayed == true){
+        // remove right hand column
+        clear_later_columns(column.id);
+        clear_column(column);
+        
+    } else {
+        // check for a displayed value in other field
+        console.log(child.state.is_displayed);
+        console.log(array);
+    }
+}
+
+// change all to false each time column is rendered?
+function change_is_displayed(array, child){
+    array.forEach(function(element){
+        element.state.is_displayed = false;
+    });
+
+    child.state.is_displayed = true;
+}
+
+
+
 function create_sort_buttons(column, array){
-    // let sort_selector = document.createElement('SELECT')
 
-    // let by_date = document.createElement('option');
-    // let by_date_node = document.createTextNode("DATE");
-    // by_date.appendChild(by_date_node);
-    // sort_selector.appendChild(by_date);
-
-    // let by_priority = document.createElement('option');
-    // let by_priority_node = document.createTextNode("PRIORITY")
-    // by_priority.appendChild(by_priority_node);
-    // sort_selector.appendChild(by_priority);
-
-    // column.appendChild(sort_selector);
-
-
+    // Don't want it to reload initial page, just call populate_column() w that current array/column
     let sort_by_date_button = document.createElement('button');
     sort_by_date_button.setAttribute('class', 'sort_button');
     sort_by_date_button.addEventListener('click', function(){
         sort_by_date(array)
-        let container = document.getElementById('content');
-        container.innerHTML = '';
-        initial_page_load();
+       
+        create_title_and_remove_button_container(array, )
+        clear_later_columns(column.id);
     });
     sort_by_date_button.innerHTML = 'Sort by Date';
     column.appendChild(sort_by_date_button);
@@ -110,9 +132,10 @@ function create_sort_buttons(column, array){
     sort_by_priority_button.setAttribute('class', 'sort_button')
     sort_by_priority_button.addEventListener('click', function(){
         sort_by_priority(array)
-        let container = document.getElementById('content');
-        container.innerHTML = '';
-        initial_page_load();
+       
+        column.innerHTML = '';
+        clear_later_columns(column.id);
+        populate_column(column, array);
     });
     sort_by_priority_button.innerHTML = 'Sort by Priority';
     column.appendChild(sort_by_priority_button);
@@ -238,6 +261,7 @@ function render_title_information(child, column){
 
     // create divs inside info container to hold data
     let title = document.createElement('div');
+    title.setAttribute('class','info_container_title')
     title.innerHTML = "Title: " + child.state.title;
     info_container.appendChild(title);
 
