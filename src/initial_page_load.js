@@ -21,9 +21,10 @@ function initial_page_load(){
 
 function populate_column(old_column, array){
 
-    create_sort_buttons(old_column, array);
-
     let new_column = create_column(old_column);
+
+    create_sort_buttons(old_column, new_column, array);
+
     let titles_container = create_title_container(old_column);
     let button = create_button(old_column);
     
@@ -43,11 +44,14 @@ function populate_column(old_column, array){
 }
 
 // create and populate individual containers for each child containing title and delete button
-function create_title_and_remove_button_container(array, parent_container, new_column){
+function create_title_and_remove_button_container(array, parent_container, new_column, reset_is_displayed = true){
     array.forEach(function(child){
 
         // make sure no child's is_displayed property is set to true
-        child.state.is_displayed = false;
+        // if this is called after sorting an array, do not reset
+        if(reset_is_displayed == true){
+            child.state.is_displayed = false;
+        }
 
         let container = document.createElement('div');
         
@@ -76,7 +80,7 @@ function create_title_and_remove_button_container(array, parent_container, new_c
         button.addEventListener('click', function(){
             // check if the child to be delete is currently displayed in the column on the right,
             // if it is, clear the right hand columns.
-            check_if_displayed(new_column, child, array);
+            check_if_displayed(new_column, child);
 
             remove_child_from_array(child, array);
 
@@ -90,16 +94,11 @@ function create_title_and_remove_button_container(array, parent_container, new_c
     });
 }
 
-function check_if_displayed(column, child, array){
+function check_if_displayed(column, child){
     if(child.state.is_displayed == true){
         // remove right hand column
         clear_later_columns(column.id);
-        clear_column(column);
-        
-    } else {
-        // check for a displayed value in other field
-        console.log(child.state.is_displayed);
-        console.log(array);
+        clear_column(column);   
     }
 }
 
@@ -114,7 +113,7 @@ function change_is_displayed(array, child){
 
 
 
-function create_sort_buttons(column, array){
+function create_sort_buttons(old_column, new_column, array){
 
     // Don't want it to reload initial page, just call populate_column() w that current array/column
     let sort_by_date_button = document.createElement('button');
@@ -122,23 +121,30 @@ function create_sort_buttons(column, array){
     sort_by_date_button.addEventListener('click', function(){
         sort_by_date(array)
        
-        create_title_and_remove_button_container(array, )
-        clear_later_columns(column.id);
+        // get titles contianer and clear it of previous data
+        let container = old_column.getElementsByClassName('titles_container');
+        container[0].innerHTML = '';
+        
+        // render newly sorted titles and their corresponding buttons
+        create_title_and_remove_button_container(array, container[0], new_column, false);
     });
     sort_by_date_button.innerHTML = 'Sort by Date';
-    column.appendChild(sort_by_date_button);
+    old_column.appendChild(sort_by_date_button);
 
     let sort_by_priority_button = document.createElement('button');
     sort_by_priority_button.setAttribute('class', 'sort_button')
     sort_by_priority_button.addEventListener('click', function(){
         sort_by_priority(array)
-       
-        column.innerHTML = '';
-        clear_later_columns(column.id);
-        populate_column(column, array);
+
+        // get titles contianer and clear it of previous data
+        let container = old_column.getElementsByClassName('titles_container');
+        container[0].innerHTML = '';
+        
+        // render newly sorted titles and their corresponding buttons
+        create_title_and_remove_button_container(array, container[0], new_column, false);
     });
     sort_by_priority_button.innerHTML = 'Sort by Priority';
-    column.appendChild(sort_by_priority_button);
+    old_column.appendChild(sort_by_priority_button);
 }
 
 function render_delete_button(container){
@@ -171,7 +177,7 @@ function new_task_button_events(form_container, button, array, titles_container,
         titles_container.innerHTML = '';
 
         // repopulate with new info
-        create_title_and_remove_button_container(array, titles_container, new_column);
+        create_title_and_remove_button_container(array, titles_container, new_column, false);
 
         // stops auto reload of page
         return false;
@@ -253,6 +259,8 @@ function create_info_container(column){
     return info_container;
 }
 
+
+
 function render_title_information(child, column){
     // create info container
     clear_later_columns(column.id);
@@ -264,13 +272,13 @@ function render_title_information(child, column){
     title.setAttribute('class','info_container_title')
     title.innerHTML = "Title: " + child.state.title;
     info_container.appendChild(title);
-
+    
     let description = document.createElement('div');
     description.innerHTML = "Description: " + child.state.description;
     info_container.appendChild(description);
 
     let priority = document.createElement('div');
-    priority.innerHTML = "Priority: " + child.state.priority;
+    priority.innerHTML = "Priority: " + return_priority_level(child.state.priority);
     info_container.appendChild(priority);
 
     if(child.state.due_date != "" ){
@@ -279,6 +287,20 @@ function render_title_information(child, column){
         due_date.innerHTML = "Due Date: " + format(parseISO(child.state.due_date), 'MM/dd/yyyy');
         info_container.appendChild(due_date);
     }
+}
+
+function return_priority_level(priority_number){
+    if(priority_number == '1'){
+        return "High";
+    } else if (priority_number == '2'){
+        return "Normal";
+    } else if (priority_number == '3'){
+        return "Low";
+    } else {
+        return "None";
+    }
+    
+
 }
 
 // get info from form and update localeStorage //

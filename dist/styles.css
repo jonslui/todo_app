@@ -22,6 +22,10 @@ html, body {
     width: 50%;
     border: none;
 }
+.sort_button:hover{
+    cursor:pointer;
+    opacity: 0.6;
+}
 
 .new_task_button {
     width: 100%;
@@ -29,6 +33,7 @@ html, body {
 }
 .new_task_button:hover{
     cursor: pointer;
+    opacity: 0.6;
 }
 
 .titles_container {
@@ -44,6 +49,11 @@ html, body {
     
 }
 
+.edit_button{
+    text-align: center;
+    margin: auto;
+    width: 100%;
+}
 
 .form_container {
     /* background-color: #F4A201; */
