@@ -49,7 +49,7 @@ function create_title_and_remove_button_container(array, parent_container, new_c
     array.forEach(function(child){
 
         // make sure no child's is_displayed property is set to true
-        // if this is called after sorting an array, do not reset
+        // if this is called after sorting an array, do not reset because that tasks child on the right should still be displayed after render
         if(reset_is_displayed == true){
             child.state.is_displayed = false;
         }
@@ -100,15 +100,6 @@ function create_title_and_remove_button_container(array, parent_container, new_c
 }
 
 
-// changes opacity of tabs when clicked to allow for a friendlier user interface
-function set_opacity(child, parent_array){
-    for(let i = 0; i < parent_array.length; i++){
-        parent_array[i].style.opacity = 0.68;
-    }
-    
-    child.style.opacity = 1;
-}
-
 function check_if_displayed(column, child){
     if(child.state.is_displayed == true){
         // remove right hand column
@@ -126,6 +117,14 @@ function change_is_displayed(array, child){
     child.state.is_displayed = true;
 }
 
+// changes opacity of tabs when clicked to allow for a friendlier user interface
+function set_opacity(child, parent_array){
+    for(let i = 0; i < parent_array.length; i++){
+        parent_array[i].style.opacity = 0.68;
+    }
+    
+    child.style.opacity = 1;
+}
 
 
 function create_sort_buttons(old_column, new_column, array){
@@ -233,6 +232,10 @@ function create_column(old_column){
     new_column.setAttribute('id', new_id);
     new_column.setAttribute('class', 'column');
     container.appendChild(new_column);
+
+
+    container.scrollLeft = container.scrollWidth;
+
 
     return new_column
 }
