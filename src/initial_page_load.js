@@ -43,6 +43,7 @@ function populate_column(old_column, array){
 
 }
 
+
 // create and populate individual containers for each child containing title and delete button
 function create_title_and_remove_button_container(array, parent_container, new_column, reset_is_displayed = true){
     array.forEach(function(child){
@@ -74,7 +75,11 @@ function create_title_and_remove_button_container(array, parent_container, new_c
 
             render_title_information(child, new_column);
             populate_column(new_column, child.state.children);
+
+            // sets/resets opacity on click 
+            set_opacity(container, parent_container.children)
         });
+
 
         let button = render_delete_button(container);
         button.addEventListener('click', function(){
@@ -92,6 +97,16 @@ function create_title_and_remove_button_container(array, parent_container, new_c
         parent_container.appendChild(container)
 
     });
+}
+
+
+// changes opacity of tabs when clicked to allow for a friendlier user interface
+function set_opacity(child, parent_array){
+    for(let i = 0; i < parent_array.length; i++){
+        parent_array[i].style.opacity = 0.68;
+    }
+    
+    child.style.opacity = 1;
 }
 
 function check_if_displayed(column, child){
@@ -270,11 +285,12 @@ function render_title_information(child, column){
     // create divs inside info container to hold data
     let title = document.createElement('div');
     title.setAttribute('class','info_container_title')
-    title.innerHTML = "Title: " + child.state.title;
+    title.innerHTML = child.state.title;
     info_container.appendChild(title);
     
     let description = document.createElement('div');
-    description.innerHTML = "Description: " + child.state.description;
+    description.setAttribute('class','info_container_description')
+    description.innerHTML = child.state.description;
     info_container.appendChild(description);
 
     let priority = document.createElement('div');
@@ -293,7 +309,7 @@ function return_priority_level(priority_number){
     if(priority_number == '1'){
         return "High";
     } else if (priority_number == '2'){
-        return "Normal";
+        return "Medium";
     } else if (priority_number == '3'){
         return "Low";
     } else {

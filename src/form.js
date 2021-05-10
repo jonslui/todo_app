@@ -7,6 +7,7 @@ function create_form(container, button){
     
     // create form fields
     let title_input = create_input_field('Enter Title', true);
+    // title_input.style.borderRadius = '10px 10px 0px 0px'
     let description_input = create_input_field('Enter Description', false);
     let priority_input = create_select_field(false);
     let due_date_input = create_date_field(false);
@@ -15,6 +16,7 @@ function create_form(container, button){
     let cancel_button = document.createElement('button');
     cancel_button.setAttribute('type','button');
     cancel_button.setAttribute('class','form_button')
+    // cancel_button.style.borderRadius = '0px 0px 10px 0px'
     cancel_button.innerHTML = "Cancel";
     cancel_button.addEventListener('click', function(){
         cancel_form(container, button);
@@ -23,6 +25,7 @@ function create_form(container, button){
     let submit_button = document.createElement('button');
     submit_button.setAttribute('type','submit');
     submit_button.setAttribute('class','form_button')
+    // submit_button.style.borderRadius = '0px 0px 0px 10px'
     submit_button.innerHTML = "Submit";
 
 
