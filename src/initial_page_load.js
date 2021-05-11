@@ -40,7 +40,6 @@ function populate_column(old_column, array){
     // create container for titles and delete buttons, then populate with children
     create_title_and_remove_button_container(array, titles_container, new_column);
 
-
 }
 
 
@@ -73,13 +72,14 @@ function create_title_and_remove_button_container(array, parent_container, new_c
             // update which child is currently displayed on the right hand side
             change_is_displayed(array, child);
 
+            create_close_column_button(new_column);
+
             render_title_information(child, new_column);
             populate_column(new_column, child.state.children);
 
             // sets/resets opacity on click 
             set_opacity(container, parent_container.children)
         });
-
 
         let button = render_delete_button(container);
         button.addEventListener('click', function(){
@@ -159,6 +159,19 @@ function create_sort_buttons(old_column, new_column, array){
     });
     sort_by_priority_button.innerHTML = 'Sort by Priority';
     old_column.appendChild(sort_by_priority_button);
+}
+
+function create_close_column_button(column){
+    let close_column_button = document.createElement('button');
+    close_column_button.innerHTML = "Close Tab";
+    close_column_button.setAttribute('class','close_column_button')
+    close_column_button.addEventListener('click', function(){
+        clear_later_columns(column.id);
+        clear_column(column)
+
+    })
+
+    column.appendChild(close_column_button);
 }
 
 function render_delete_button(container){
