@@ -1,5 +1,5 @@
 import create_new_child from './create_todo.js';
-import create_form from './form.js';
+import {create_form, create_input_field, create_date_field, create_select_field, create_option, cancel_form} from './form.js';
 import {compareAsc, parseISO, format} from 'date-fns';
 
 let localStorage_array = get_localStorage_array();
@@ -55,15 +55,7 @@ function create_title_and_remove_button_container(array, parent_container, new_c
 
         let container = document.createElement('div');
         
-        if(child.state.priority == "1"){
-            container.setAttribute('class', 'title_and_delete_button_container high_priority')
-        }else if(child.state.priority == "2"){
-            container.setAttribute('class','title_and_delete_button_container medium_priority');
-        }else if(child.state.priority == "3"){
-            container.setAttribute('class','title_and_delete_button_container low_priority');
-        }else{
-            container.setAttribute('class','title_and_delete_button_container');
-        }
+        set_priority_class(child, container);
 
         let title = render_title(child, container);
         title.addEventListener('click', function(){
@@ -99,6 +91,17 @@ function create_title_and_remove_button_container(array, parent_container, new_c
     });
 }
 
+function set_priority_class(child, container){
+    if(child.state.priority == "1"){
+        container.setAttribute('class', 'title_and_delete_button_container high_priority')
+    }else if(child.state.priority == "2"){
+        container.setAttribute('class','title_and_delete_button_container medium_priority');
+    }else if(child.state.priority == "3"){
+        container.setAttribute('class','title_and_delete_button_container low_priority');
+    }else{
+        container.setAttribute('class','title_and_delete_button_container');
+    }
+}
 
 function check_if_displayed(column, child){
     if(child.state.is_displayed == true){
@@ -161,6 +164,7 @@ function create_sort_buttons(old_column, new_column, array){
     old_column.appendChild(sort_by_priority_button);
 }
 
+// allows closing of current column and later columns
 function create_close_column_button(column){
     let close_column_button = document.createElement('button');
     close_column_button.innerHTML = "Close Tab";
@@ -303,7 +307,7 @@ function render_title_information(child, column){
     title.setAttribute('class','info_container_title')
     title.innerHTML = child.state.title;
     info_container.appendChild(title);
-    
+
     let description = document.createElement('div');
     description.setAttribute('class','info_container_description')
     description.innerHTML = child.state.description;
@@ -313,12 +317,130 @@ function render_title_information(child, column){
     priority.innerHTML = "Priority: " + return_priority_level(child.state.priority);
     info_container.appendChild(priority);
 
+    let due_date = document.createElement('div');
+    info_container.appendChild(due_date);
     if(child.state.due_date != "" ){
-        let due_date = document.createElement('div');
         // format and parseISO are two functions from date-fns, format manipulates how the date data is displayed, parseISO makes data readable for format.
         due_date.innerHTML = "Due Date: " + format(parseISO(child.state.due_date), 'MM/dd/yyyy');
-        info_container.appendChild(due_date);
     }
+
+    let edit_button = document.createElement('button');
+    edit_button.innerHTML = 'Edit';
+    edit_button.setAttribute('class', 'edit_button');
+    edit_button.addEventListener('click', function(){
+        if(info_container.style.display != 'none'){
+            edit_content(column, info_container, child, edit_button);
+        }
+    })
+    column.appendChild(edit_button);
+}
+
+function edit_content(column, container, child, edit_button){
+    let temp_container = document.createElement('div');
+
+    edit_button.style.display = 'none';
+    container.style.display = 'none';
+    let container_children = container.children
+    column.appendChild(temp_container);
+
+    let title_input = create_input_field(container_children[0].innerHTML, true);
+    temp_container.appendChild(title_input);
+    let description_input = create_input_field('Description: ' + container_children[1].innerHTML, false);
+    temp_container.appendChild(description_input);
+    let priority_input = create_select_field(false);
+    temp_container.appendChild(priority_input);
+    let date_field = create_date_field(false);
+    temp_container.appendChild(date_field);
+
+    column.insertBefore(temp_container, container);
+
+    let submit_button = document.createElement('button');
+    submit_button.innerHTML = 'Submit';
+    submit_button.setAttribute('class','form_button');
+    submit_button.addEventListener('click', function(){
+        new_button.remove();
+        if(title_input.value != ''){
+            child.state.title = title_input.value;
+            container_children[0].innerHTML = title_input.value;
+
+            // function to find is_displayed child and change its div
+            let title = find_displayed_title(column.id);
+            title.innerHTML = title_input.value;
+        }
+        if(description_input.value != ''){
+            child.state.description = description_input.value;
+            container_children[1].innerHTML = description_input.value;
+        }
+        if(priority_input.value != ''){
+            child.state.priority = priority_input.value;
+            container_children[2].innerHTML = "Priority: " + return_priority_level(priority_input.value)
+            let displayed = find_displayed_title_and_delete_button_container(column.id);
+            set_priority_class(child, displayed);
+        }
+        if(date_field.value != ''){
+            // format and parseISO are two functions from date-fns, format manipulates how the date data is displayed, parseISO makes data readable for format.
+            child.state.due_date = date_field.value;
+            container_children[3].innerHTML = "Due Date: " + format(parseISO(child.state.due_date), 'MM/dd/yyyy');
+        }
+
+        // show original and updated container
+        container.style.display = '';
+        // remove edit container
+        temp_container.remove();
+        // update with new data
+        update_localStorage_array();
+
+        edit_button.style.display = '';
+
+        new_button.remove();
+        submit_button.remove();
+    });
+    column.insertBefore(submit_button, edit_button);
+
+
+
+    let new_button = document.createElement('button');
+    new_button.setAttribute('class', 'form_button');
+    new_button.innerHTML = 'Cancel';
+    new_button.addEventListener('click', function(){
+        container.style.display = '';
+        temp_container.remove();
+        edit_button.style.display = '';
+
+        submit_button.remove();
+        new_button.remove();
+    });
+    column.insertBefore(new_button, submit_button);
+
+}
+
+function find_displayed_title(column_id){
+    let title_column = document.getElementById(column_id - 1);
+    let array = title_column.getElementsByClassName('title_and_delete_button_container')
+    let displayed_title = '';
+
+    for(let i = 0; i < array.length; i++){
+        if(array[i].style.opacity == 1){
+           let displayed_title_container = array[i];
+           displayed_title = displayed_title_container.getElementsByClassName('title')[0];
+        }
+    };
+
+    return displayed_title;
+}
+
+function find_displayed_title_and_delete_button_container(column_id){
+    let title_column = document.getElementById(column_id - 1);
+    let array = title_column.getElementsByClassName('title_and_delete_button_container')
+    let displayed_title_container = '';
+
+    for(let i = 0; i < array.length; i++){
+        if(array[i].style.opacity == 1){
+           displayed_title_container = array[i];
+        }
+    };
+
+    return displayed_title_container;
 }
 
 function return_priority_level(priority_number){

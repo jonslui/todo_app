@@ -95,4 +95,4 @@ function cancel_form(container){
 }
 
 
-export default create_form;
+export {create_form, create_input_field, create_date_field, create_select_field, create_option, cancel_form};

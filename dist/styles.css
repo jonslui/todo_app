@@ -138,3 +138,12 @@ html, body {
     background-color: #fdfdfd;
     opacity: 0.6;
 }
+
+.edit_button{
+    width: 100%;
+    border: none;    
+}
+.edit_button:hover{
+    opacity: 0.8;
+    cursor: pointer;
+}
