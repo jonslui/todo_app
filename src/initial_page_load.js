@@ -1,5 +1,5 @@
 import create_new_child from './create_todo.js';
-import {create_form, create_input_field, create_date_field, create_select_field, create_option, cancel_form} from './form.js';
+import {create_form, create_input_field, create_date_field, create_select_field} from './form.js';
 import {compareAsc, parseISO, format} from 'date-fns';
 
 let localStorage_array = get_localStorage_array();
@@ -52,7 +52,7 @@ function create_title_and_remove_button_container(array, parent_container, new_c
         if(reset_is_displayed == true){
             child.state.is_displayed = false;
         }
-
+        
         let container = document.createElement('div');
         
         set_priority_class(child, container);
@@ -87,7 +87,6 @@ function create_title_and_remove_button_container(array, parent_container, new_c
         })
 
         parent_container.appendChild(container)
-
     });
 }
 
@@ -198,7 +197,7 @@ function new_task_button_events(form_container, button, array, titles_container,
     let form_data = create_form(form_container, button);
 
     form_data.form.onsubmit = function (){
-        get_form_data(form_data.fields_array, create_new_child, array)
+        get_form_data_and_create_child(form_data.fields_array, create_new_child, array)
         update_localStorage_array();
 
         // clears form from display
@@ -348,8 +347,10 @@ function edit_content(column, container, child, edit_button){
     let description_input = create_input_field('Description: ' + container_children[1].innerHTML, false);
     temp_container.appendChild(description_input);
     let priority_input = create_select_field(false);
+    priority_input.value = child.state.priority;
     temp_container.appendChild(priority_input);
     let date_field = create_date_field(false);
+    date_field.value = child.state.due_date;
     temp_container.appendChild(date_field);
 
     column.insertBefore(temp_container, container);
@@ -358,13 +359,14 @@ function edit_content(column, container, child, edit_button){
     submit_button.innerHTML = 'Submit';
     submit_button.setAttribute('class','form_button');
     submit_button.addEventListener('click', function(){
-        new_button.remove();
+        cancel_button.remove();
         if(title_input.value != ''){
             child.state.title = title_input.value;
             container_children[0].innerHTML = title_input.value;
 
             // function to find is_displayed child and change its div
-            let title = find_displayed_title(column.id);
+            let title_delete_container = find_displayed_title_and_delete_button_container(column.id);
+            let title = title_delete_container.getElementsByClassName('title')[0]
             title.innerHTML = title_input.value;
         }
         if(description_input.value != ''){
@@ -392,42 +394,26 @@ function edit_content(column, container, child, edit_button){
 
         edit_button.style.display = '';
 
-        new_button.remove();
+        cancel_button.remove();
         submit_button.remove();
     });
     column.insertBefore(submit_button, edit_button);
 
-
-
-    let new_button = document.createElement('button');
-    new_button.setAttribute('class', 'form_button');
-    new_button.innerHTML = 'Cancel';
-    new_button.addEventListener('click', function(){
+    let cancel_button = document.createElement('button');
+    cancel_button.setAttribute('class', 'form_button');
+    cancel_button.innerHTML = 'Cancel';
+    cancel_button.addEventListener('click', function(){
         container.style.display = '';
         temp_container.remove();
         edit_button.style.display = '';
 
+        temp_container.remove();
         submit_button.remove();
-        new_button.remove();
+        cancel_button.remove();
     });
-    column.insertBefore(new_button, submit_button);
-
+    column.insertBefore(cancel_button, submit_button);
 }
 
-function find_displayed_title(column_id){
-    let title_column = document.getElementById(column_id - 1);
-    let array = title_column.getElementsByClassName('title_and_delete_button_container')
-    let displayed_title = '';
-
-    for(let i = 0; i < array.length; i++){
-        if(array[i].style.opacity == 1){
-           let displayed_title_container = array[i];
-           displayed_title = displayed_title_container.getElementsByClassName('title')[0];
-        }
-    };
-
-    return displayed_title;
-}
 
 function find_displayed_title_and_delete_button_container(column_id){
     let title_column = document.getElementById(column_id - 1);
@@ -442,6 +428,7 @@ function find_displayed_title_and_delete_button_container(column_id){
 
     return displayed_title_container;
 }
+
 
 function return_priority_level(priority_number){
     if(priority_number == '1'){
@@ -458,7 +445,7 @@ function return_priority_level(priority_number){
 }
 
 // get info from form and update localeStorage //
-function get_form_data(fields_array, create_child_function, array){
+function get_form_data_and_create_child(fields_array, create_child_function, array){
     // fields array contains links to input field
     let title = fields_array[0].value;
     let description = fields_array[1].value;
