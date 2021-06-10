@@ -8,14 +8,14 @@ My aim when creating this project was to create a todo app that could:
 5. Update screen display when a change is made, without having to refresh the whole page.
 6. Be pleasant to look at and easy to use.
 
+https://user-images.githubusercontent.com/34390833/121590623-c25d5880-c9f5-11eb-84b1-8bd89ee3bfb0.mov
+
 ## Usage
 1. Click "New Task," fill out the information in the form, submit.
 2. To view a task, click on the task title.
 3. After clicking on a task title, view its contents and create subtasks by following steps 1 and 2 in the new column.
 4. If you have multiple tasks and would like to view them in terms of priority or due date, simply click one of the two sort buttons.
 5. Enjoy!
-
-<!-- Insert video here -->
 
 ## Accomplishing Project Goals
 
