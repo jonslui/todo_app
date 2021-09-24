@@ -1,3 +1,5 @@
+Demo: https://jonslui.github.io/todo_app/dist/index.html
+
 ## My Todo App
 
 My aim when creating this project was to create a todo app that could:
@@ -11,11 +13,12 @@ My aim when creating this project was to create a todo app that could:
 https://user-images.githubusercontent.com/34390833/121590623-c25d5880-c9f5-11eb-84b1-8bd89ee3bfb0.mov
 
 ## Usage
-1. Click "New Task," fill out the information in the form, submit.
-2. To view a task, click on the task title.
-3. After clicking on a task title, view its contents and create subtasks by following steps 1 and 2 in the new column.
-4. If you have multiple tasks and would like to view them in terms of priority or due date, simply click one of the two sort buttons.
-5. Enjoy!
+1. Follow this link to demo: https://jonslui.github.io/todo_app/dist/index.html
+2. Click "New Task," fill out the information in the form, submit.
+3. To view a task, click on the task title.
+4. After clicking on a task title, view its contents and create subtasks by following steps 1 and 2 in the new column.
+5. If you have multiple tasks and would like to view them in terms of priority or due date, simply click one of the two sort buttons.
+6. Enjoy!
 
 ## Accomplishing Project Goals
 
